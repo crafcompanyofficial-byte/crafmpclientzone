@@ -265,7 +265,7 @@ export function Catalog() {
   }
 
   return (
-    <div className="flex min-h-full flex-1 flex-col pt-[60px]">
+    <div className="flex min-h-full flex-1 flex-col pt-[var(--app-header-offset)]">
       {!legacyFilter && (
         <div className="sticky top-[var(--app-header-offset)] z-20 flex-shrink-0 bg-[#F5F5F5] px-[16px] pb-[16px] pt-[16px]">
           <div className="flex flex-col gap-[16px]">

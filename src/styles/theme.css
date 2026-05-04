@@ -48,8 +48,8 @@
   --neumorphic-shadow: 4px 4px 12px rgba(0, 0, 0, 0.06), -4px -4px 12px rgba(255, 255, 255, 0.9);
   --neumorphic-shadow-inset: inset 2px 2px 6px rgba(0, 0, 0, 0.05), inset -2px -2px 6px rgba(255, 255, 255, 0.7);
 
-  /* Notch / Dynamic Island: body padding uses env(); fixed header + sticky rows use vars */
-  --safe-area-top: env(safe-area-inset-top, 0px);
+  /* Safe area inside fixed header (padding); must match `AppHeader` `paddingTop` */
+  --safe-area-top: env(safe-area-inset-top, 20px);
   --app-header-offset: calc(60px + var(--safe-area-top));
 }
 
@@ -138,8 +138,6 @@
 
   body {
     @apply bg-background text-foreground;
-    /* Content starts below notch; background still fills viewport via html/body bg */
-    padding-top: env(safe-area-inset-top, 20px);
     padding-bottom: env(safe-area-inset-bottom, 20px);
     font-family: 'Onest', -apple-system, BlinkMacSystemFont, sans-serif;
     -webkit-font-smoothing: antialiased;

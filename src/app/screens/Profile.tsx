@@ -77,7 +77,7 @@ export function Profile() {
   }, [clientRecordId, name, phone, user]);
 
   return (
-    <div className={`flex min-h-full flex-1 flex-col pb-8 pt-[60px] ${DS_FONT_ONEST}`}>
+    <div className={`flex min-h-full flex-1 flex-col pb-8 pt-[var(--app-header-offset)] ${DS_FONT_ONEST}`}>
       <div className="mx-auto mt-4 w-full space-y-[23px] px-[16px] pb-6">
         <div className={CARD_SHELL}>
           <h3 className={`${DS_TEXT_MAIN} mb-4`}>Shaxsiy ma&apos;lumotlar</h3>

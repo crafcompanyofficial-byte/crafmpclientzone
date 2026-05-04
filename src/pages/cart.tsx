@@ -207,7 +207,7 @@ export function Cart() {
   };
 
   return (
-    <div className="flex min-h-full flex-1 flex-col bg-[#F5F5F5] pt-[60px]">
+    <div className="flex min-h-full flex-1 flex-col bg-[#F5F5F5] pt-[var(--app-header-offset)]">
       <div className="sticky top-[var(--app-header-offset)] z-40 bg-[#F5F5F5]">
         <div className="w-full max-w-[700px] px-[16px] pt-3 pb-0">
           <div className="mb-[20px] flex w-full rounded-[14px] bg-[#EAEAEA] p-1">

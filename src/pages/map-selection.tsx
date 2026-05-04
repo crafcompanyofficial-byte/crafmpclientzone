@@ -73,7 +73,7 @@ export function MapSelection() {
 
   return (
     <div
-      className={`flex min-h-0 w-full max-w-full flex-1 flex-col overflow-x-hidden pt-[60px] ${DS_FONT_ONEST}`}
+      className={`flex min-h-0 w-full max-w-full flex-1 flex-col overflow-x-hidden pt-[var(--app-header-offset)] ${DS_FONT_ONEST}`}
     >
       <div className="w-full shrink-0 border-b border-gray-100 px-[16px] py-4">
         <h1 className="truncate text-[18px] font-semibold text-[#1A1A1A]">{pageTitle}</h1>

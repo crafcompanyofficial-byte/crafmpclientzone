@@ -12,7 +12,7 @@ import { useCartStore } from '../shared/store/cartStore';
 import { DS_TACTILE } from '../shared/ui/designTokens';
 
 const WRAPPER_CLASS =
-  'relative mx-auto flex min-h-screen w-full max-w-[700px] flex-col overflow-x-hidden bg-[#F5F5F5] pb-24 pt-[60px]';
+  'relative mx-auto flex min-h-screen w-full max-w-[700px] flex-col overflow-x-hidden bg-[#F5F5F5] pb-24 pt-[var(--app-header-offset)]';
 
 const TYPE_BTN_ACTIVE = `${DS_TACTILE} rounded-[13px] bg-[#E54B4B] px-4 py-2 font-['Onest'] text-[clamp(14px,3.5vw,18px)] font-medium text-white`;
 const TYPE_BTN_IDLE = `${DS_TACTILE} rounded-[13px] bg-[#F2F2F2] px-4 py-2 font-['Onest'] text-[clamp(14px,3.5vw,18px)] font-medium text-[#1A1A1A]`;

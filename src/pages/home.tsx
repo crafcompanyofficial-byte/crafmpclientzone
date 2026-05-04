@@ -149,7 +149,7 @@ export function Home() {
         : `${totalQty} dona`;
 
   return (
-    <div className={`flex min-h-full flex-1 flex-col pb-8 pt-[60px] ${DS_FONT_ONEST}`}>
+    <div className={`flex min-h-full flex-1 flex-col pb-8 pt-[var(--app-header-offset)] ${DS_FONT_ONEST}`}>
       <div className="flex w-full flex-col gap-[20px] px-[16px]">
         <Link
           to="/profile"

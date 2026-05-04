@@ -1,13 +1,16 @@
 import React from 'react';
 
-/** Fixed shell header: below notch / Telegram chrome; content uses `pt-[60px]` + body safe-area padding. */
+/**
+ * Fixed shell: `top: 0` + `paddingTop: env(safe-area-inset-top)` paints `#F5F5F5` under the notch
+ * (no viewport gap when scrolling). Logo row stays `h-[60px]`. Content clears `var(--app-header-offset)`.
+ */
 export function AppHeader() {
   return (
     <header
-      className="fixed left-0 right-0 z-50 flex h-[60px] items-center justify-center bg-[#F5F5F5]"
-      style={{ top: 'var(--safe-area-top)' }}
+      className="fixed top-0 left-0 right-0 z-[100] flex w-full flex-col bg-[#F5F5F5]"
+      style={{ paddingTop: 'var(--safe-area-top)' }}
     >
-      <div className="mx-auto flex h-full w-full max-w-[700px] shrink-0 items-center justify-center px-4">
+      <div className="mx-auto flex h-[60px] w-full max-w-[700px] shrink-0 items-center justify-center px-4">
         <img
           src={`${import.meta.env.BASE_URL}craf-logo.svg`}
           alt="CRAF"

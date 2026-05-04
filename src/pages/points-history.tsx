@@ -98,7 +98,7 @@ export function PointsHistory() {
 
   return (
     <div
-      className={`relative mx-auto flex min-h-screen w-full max-w-[700px] flex-col overflow-x-hidden bg-[#F5F5F5] pb-10 pt-[60px] ${DS_FONT_ONEST}`}
+      className={`relative mx-auto flex min-h-screen w-full max-w-[700px] flex-col overflow-x-hidden bg-[#F5F5F5] pb-10 pt-[var(--app-header-offset)] ${DS_FONT_ONEST}`}
     >
       <header className="w-full shrink-0 px-[16px] pb-3 pt-2">
         <h1 className="truncate text-center text-[18px] font-semibold leading-tight text-[#1A1A1A] font-['Onest']">
