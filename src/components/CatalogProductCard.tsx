@@ -32,7 +32,7 @@ export function toCatalogCardItemFromDbGroup(item: GroupsWithPrices): CatalogPro
   return {
     id: item.id,
     sku: skuLabel,
-    name: String(item.name ?? 'Товар').trim() || 'Товар',
+    name: String(item.name ?? 'Mahsulot').trim() || 'Mahsulot',
     priceLabel: min > 0 ? `${Math.round(min)} $` : '12 $',
     image: item.main_image?.trim() ? item.main_image.trim() : null,
     is_new: item.is_new === true,
@@ -73,7 +73,7 @@ export function CatalogProductCard({ item }: CatalogProductCardProps) {
           </span>
         }
         {item.is_new === true ?
-          <span className={NEW_BADGE}>NEW</span>
+          <span className={NEW_BADGE}>YANGI</span>
         : null}
       </div>
       <div className="flex flex-1 flex-col justify-between p-[12px]">

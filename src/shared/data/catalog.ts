@@ -29,7 +29,7 @@ export interface CatalogParentProduct {
   /** If set, product details shows variant pills; colors depend on selected variant */
   variant_types: VariantTypeCode[] | null;
   children: CatalogChildProduct[];
-  /** Mock listing flags for home «Все» → catalog ?filter= */
+  /** Mock listing flags for home «Barchasi» → catalog ?filter= */
   listing?: { promotion?: boolean; newArrival?: boolean };
 }
 
@@ -40,9 +40,9 @@ export const PROFILE_SUBCATEGORIES: { id: ProfileSubcategoryId; label: string }[
 ];
 
 export const ACCESSORY_SUBCATEGORIES: { id: AccessorySubcategoryId; label: string }[] = [
-  { id: 'door', label: 'Дверные' },
-  { id: 'window', label: 'Оконные' },
-  { id: 'other', label: 'Прочие' },
+  { id: 'door', label: 'Eshik uchun' },
+  { id: 'window', label: 'Deraza uchun' },
+  { id: 'other', label: 'Boshqa' },
 ];
 
 export const CATALOG_PARENTS: CatalogParentProduct[] = [

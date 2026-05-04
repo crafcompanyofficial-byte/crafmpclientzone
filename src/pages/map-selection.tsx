@@ -68,7 +68,7 @@ export function MapSelection() {
     navigate(-1);
   };
 
-  const pageTitle = selectedRegion ? 'Выбор' : 'Tanlang';
+  const pageTitle = selectedRegion ? 'Tanlash' : 'Tanlang';
   const subtitle = selectedRegion ? selectedRegion : 'Viloyat tanlang';
 
   return (

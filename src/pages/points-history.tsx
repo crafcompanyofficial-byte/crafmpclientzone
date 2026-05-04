@@ -102,7 +102,7 @@ export function PointsHistory() {
     >
       <header className="w-full shrink-0 px-[16px] pb-3 pt-2">
         <h1 className="truncate text-center text-[18px] font-semibold leading-tight text-[#1A1A1A] font-['Onest']">
-          История баллов
+          Ballar tarixi
         </h1>
       </header>
 

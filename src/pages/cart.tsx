@@ -10,9 +10,9 @@ import { DS_BTN_PRIMARY, DS_INPUT, DS_TACTILE } from '../shared/ui/designTokens'
 export type OrderPeriod = 'week' | 'month' | 'custom';
 
 const periodFilters: { id: OrderPeriod; label: string }[] = [
-  { id: 'week', label: 'Неделя' },
-  { id: 'month', label: 'Месяц' },
-  { id: 'custom', label: 'Период' },
+  { id: 'week', label: 'Hafta' },
+  { id: 'month', label: 'Oy' },
+  { id: 'custom', label: 'Davr' },
 ];
 
 function localDayString(d: Date): string {
@@ -61,7 +61,14 @@ type OrderRow = {
 
 function formatVariant(v: string | null) {
   if (!v) return null;
-  return `Tur: ${v}`;
+  return `Turi: ${v}`;
+}
+
+function orderStatusLabelUz(status: string | null | undefined): string {
+  const s = String(status ?? '').toLowerCase();
+  if (s === 'pending') return 'Kutilmoqda';
+  if (s === 'completed' || s === 'confirmed') return 'Bajarildi';
+  return String(status ?? '').trim();
 }
 
 export function Cart() {
@@ -201,7 +208,7 @@ export function Cart() {
 
   return (
     <div className="flex min-h-full flex-1 flex-col bg-[#F5F5F5] pt-[60px]">
-      <div className="sticky top-[60px] z-40 bg-[#F5F5F5]">
+      <div className="sticky top-[var(--app-header-offset)] z-40 bg-[#F5F5F5]">
         <div className="w-full max-w-[700px] px-[16px] pt-3 pb-0">
           <div className="mb-[20px] flex w-full rounded-[14px] bg-[#EAEAEA] p-1">
             <button
@@ -216,7 +223,7 @@ export function Cart() {
                   : 'font-medium text-[#A1A1A1]'
               }`}
             >
-              Savat
+              Savatcha
             </button>
             <button
               type="button"
@@ -245,11 +252,11 @@ export function Cart() {
               <div className="mt-12 flex flex-col items-center justify-center">
                 <img
                   src="/empty-cart.png"
-                  alt="Empty"
+                  alt="Bo&apos;sh savatcha"
                   className="mb-6 w-[180px] object-contain sm:w-[220px]"
                 />
                 <p className="font-['Onest'] text-[15px] font-bold text-[#2E2E2E]">
-                  Savatingiz bo&apos;sh
+                  Savatcha bo&apos;sh
                 </p>
               </div>
             ) : (
@@ -283,7 +290,7 @@ export function Cart() {
                           <div>Rang: {item.color}</div>
                         </div>
                         <div className="font-['Onest'] text-[clamp(16px,4vw,20px)] font-bold text-[#1A1A1A]">
-                          {`$ ${item.price.toLocaleString('ru-RU')}`}
+                          {`$ ${item.price.toLocaleString('uz-UZ')}`}
                         </div>
                       </div>
 
@@ -328,14 +335,14 @@ export function Cart() {
                     <div className="flex justify-between font-['Onest'] text-[14px]">
                       <span className="text-[#565656]">Oraliq jami</span>
                       <span className="font-semibold text-[#1A1A1A]">
-                        {`$ ${subtotal.toLocaleString('ru-RU')}`}
+                        {`$ ${subtotal.toLocaleString('uz-UZ')}`}
                       </span>
                     </div>
                     {loyaltyDiscountRate > 0 ?
                       <div className="flex justify-between font-['Onest'] text-[14px]">
                         <span className="text-[#565656]">{`Chegirma (${loyaltyDiscountPercent}%)`}</span>
                         <span className="font-semibold text-green-600">
-                          {`-$ ${discount.toLocaleString('ru-RU')}`}
+                          {`-$ ${discount.toLocaleString('uz-UZ')}`}
                         </span>
                       </div>
                     : null}
@@ -343,7 +350,7 @@ export function Cart() {
                     <div className="flex justify-between">
                       <span className="font-['Onest'] text-[clamp(16px,4vw,20px)] font-bold text-[#1A1A1A]">Jami</span>
                       <span className="font-['Onest'] text-[clamp(16px,4vw,20px)] font-bold text-[#1A1A1A]">
-                        {`$ ${cartTotal.toLocaleString('ru-RU')}`}
+                        {`$ ${cartTotal.toLocaleString('uz-UZ')}`}
                       </span>
                     </div>
                   </div>
@@ -402,7 +409,7 @@ export function Cart() {
                 <div className="mt-12 flex flex-col items-center justify-center">
                   <img
                     src="/empty-history.png"
-                    alt="Empty"
+                    alt="Buyurtma tarixi yo&apos;q"
                     className="mb-6 w-[180px] object-contain sm:w-[220px]"
                   />
                   <p className="font-['Onest'] text-[15px] font-bold text-[#2E2E2E]">
@@ -428,7 +435,7 @@ export function Cart() {
                             {orderTitle}
                           </h3>
                           <p className="mt-1 font-['Onest'] text-[12px] text-[#A1A1A1]">
-                            {new Date(order.created_at).toLocaleDateString('ru-RU', {
+                            {new Date(order.created_at).toLocaleDateString('uz-UZ', {
                               day: 'numeric',
                               month: 'short',
                               year: 'numeric',
@@ -437,7 +444,7 @@ export function Cart() {
                         </div>
 
                         <span className="rounded-full bg-[#FDF3D0] px-3 py-1 font-['Onest'] text-[12px] font-medium text-[#B0891D]">
-                          {order.status === 'pending' ? 'Jarayonda' : (order.status ?? '')}
+                          {orderStatusLabelUz(order.status)}
                         </span>
                       </div>
                       <div className="my-3 border-t border-gray-100" />
@@ -446,7 +453,7 @@ export function Cart() {
                           {order.order_items?.length || 0} ta mahsulot
                         </span>
                         <span className="font-['Onest'] text-[clamp(16px,4vw,20px)] font-bold text-[#1A1A1A]">
-                          $ {totalAmt.toLocaleString('ru-RU')}
+                          $ {totalAmt.toLocaleString('uz-UZ')}
                         </span>
                       </div>
                     </div>

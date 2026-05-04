@@ -6,7 +6,7 @@ export type UzbekistanRegion = {
 
 export const UZBEKISTAN_REGIONS: readonly UzbekistanRegion[] = [
   {
-    name: 'Тошкент',
+    name: 'Toshkent',
     cities: [
       'Toshkent shahri',
       'Chirchiq',
@@ -20,27 +20,27 @@ export const UZBEKISTAN_REGIONS: readonly UzbekistanRegion[] = [
     ],
   },
   {
-    name: 'Самарканд',
+    name: 'Samarqand',
     cities: ['Samarqand shahri', 'Urgut', "Kattaqo'rg'on", 'Jomboy', 'Nurobod', "Bulung'ur", 'Payariq'],
   },
   {
-    name: 'Бухара',
+    name: 'Buxoro',
     cities: ['Buxoro shahri', "G'ijduvon", 'Kogon', 'Romiton', 'Shofirkon', 'Vobkent', 'Zarafshon shahri'],
   },
   {
-    name: 'Андижон',
+    name: 'Andijon',
     cities: ['Andijon shahri', 'Xojaobod', 'Asaka', 'Shahrixon', 'Marhamat', "Oltinko'l", 'Buloqboshi'],
   },
   {
-    name: "Фарғона",
+    name: "Farg'ona",
     cities: ["Farg'ona shahri", "Qo'qon", "Marg'ilon", 'Rishtan', "Ozbekiston shahri", 'Quvasoy', 'Beshariq'],
   },
   {
-    name: 'Хоразм',
+    name: 'Xorazm',
     cities: ['Urganch shahri', 'Xiva shahri', 'Gurlan', 'Shovot', 'Hazorasp', "Qoshko'pir", 'Yangiariq'],
   },
   {
-    name: 'Наманган',
+    name: 'Namangan',
     cities: ['Namangan shahri', 'Chortoq', 'Chust', 'Kosonsoy', 'Pop', "To'raqo'rg'on", 'Norin'],
   },
 ];

@@ -47,6 +47,10 @@
   --radius-pill: 20px;
   --neumorphic-shadow: 4px 4px 12px rgba(0, 0, 0, 0.06), -4px -4px 12px rgba(255, 255, 255, 0.9);
   --neumorphic-shadow-inset: inset 2px 2px 6px rgba(0, 0, 0, 0.05), inset -2px -2px 6px rgba(255, 255, 255, 0.7);
+
+  /* Notch / Dynamic Island: body padding uses env(); fixed header + sticky rows use vars */
+  --safe-area-top: env(safe-area-inset-top, 0px);
+  --app-header-offset: calc(60px + var(--safe-area-top));
 }
 
 .dark {
@@ -134,6 +138,8 @@
 
   body {
     @apply bg-background text-foreground;
+    /* Content starts below notch; background still fills viewport via html/body bg */
+    padding-top: env(safe-area-inset-top, 20px);
     padding-bottom: env(safe-area-inset-bottom, 20px);
     font-family: 'Onest', -apple-system, BlinkMacSystemFont, sans-serif;
     -webkit-font-smoothing: antialiased;
@@ -145,17 +151,15 @@
     -webkit-tap-highlight-color: transparent;
   }
 
-  html {
-    scroll-behavior: smooth;
-  }
-
   /**
   * Default typography styles for HTML elements (h1-h4, p, label, button, input).
   * These are in @layer base, so Tailwind utility classes (like text-sm, text-lg) automatically override them.
   */
 
   html {
+    scroll-behavior: smooth;
     font-size: var(--font-size);
+    background-color: var(--background);
   }
 
   h1 {

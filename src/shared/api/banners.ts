@@ -47,7 +47,7 @@ function normalizeBannerRow(row: unknown): Banner | null {
 export async function fetchActiveBanners(): Promise<{ data: Banner[]; error: string | null }> {
   const supabase = getSupabase();
   if (!supabase) {
-    return { data: [], error: 'Supabase не настроен' };
+    return { data: [], error: 'Supabase sozlanmagan' };
   }
 
   const { data, error } = await supabase

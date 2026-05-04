@@ -20,7 +20,10 @@ export function HydrationGate() {
   if (!hydrated) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-[#F5F5F5]">
-        <Loader2 className="h-9 w-9 animate-spin text-[#E54B4B]" aria-hidden />
+        <Loader2
+          className="h-9 w-9 animate-spin text-[#E54B4B]"
+          aria-label="Yuklanmoqda"
+        />
       </div>
     );
   }

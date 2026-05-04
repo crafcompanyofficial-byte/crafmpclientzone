@@ -78,7 +78,7 @@ export function Profile() {
 
   return (
     <div className={`flex min-h-full flex-1 flex-col pb-8 pt-[60px] ${DS_FONT_ONEST}`}>
-      <div className="mx-auto w-full space-y-[23px] px-[16px] pb-6">
+      <div className="mx-auto mt-4 w-full space-y-[23px] px-[16px] pb-6">
         <div className={CARD_SHELL}>
           <h3 className={`${DS_TEXT_MAIN} mb-4`}>Shaxsiy ma&apos;lumotlar</h3>
 
@@ -116,7 +116,7 @@ export function Profile() {
             <Link
               to="/map-selection"
               className={`${DS_TACTILE} flex min-h-[39px] w-[50px] shrink-0 items-center justify-center rounded-[13px] bg-[#F2F2F2]`}
-              aria-label="Change location"
+              aria-label="Joylashuvni o'zgartirish"
             >
               <MapPin className="h-5 w-5 text-[#565656]" strokeWidth={2} aria-hidden />
             </Link>
@@ -126,7 +126,7 @@ export function Profile() {
               onClick={() => void handleSave()}
               className={`min-w-0 flex-1 ${DS_BTN_PRIMARY_ROW} disabled:opacity-60 disabled:active:scale-100`}
             >
-              {saving ? 'Saqlanmoqda…' : 'Сохранить'}
+              {saving ? 'Saqlanmoqda…' : 'Saqlash'}
             </button>
           </div>
         </div>

@@ -23,7 +23,7 @@ const COLOR_FALLBACK_IDLE = `${DS_TACTILE} rounded-[13px] border-2 border-transp
 function uniqueSortedTypes(list: ProductVariantNormalized[]): string[] {
   const s = new Set<string>();
   for (const v of list) s.add(v.type);
-  return [...s].sort((a, b) => a.localeCompare(b, 'ru'));
+  return [...s].sort((a, b) => a.localeCompare(b, 'uz'));
 }
 
 function variantsOfType(list: ProductVariantNormalized[], selectedType: string): ProductVariantNormalized[] {
@@ -33,11 +33,11 @@ function variantsOfType(list: ProductVariantNormalized[], selectedType: string):
 function uniqueSortedColors(sub: ProductVariantNormalized[]): string[] {
   const s = new Set<string>();
   for (const v of sub) s.add(v.color_name);
-  return [...s].sort((a, b) => a.localeCompare(b, 'ru'));
+  return [...s].sort((a, b) => a.localeCompare(b, 'uz'));
 }
 
 function labelForType(t: string): string {
-  return t.trim() === '' ? 'Стандарт' : t;
+  return t.trim() === '' ? 'Standart' : t;
 }
 
 export function ProductDetails() {
@@ -153,7 +153,7 @@ export function ProductDetails() {
   const mainImage =
     typeof group?.main_image === 'string' && group.main_image.trim() ? group.main_image.trim() : '';
 
-  const title = typeof group?.name === 'string' && group.name.trim() ? group.name.trim() : 'Товар';
+  const title = typeof group?.name === 'string' && group.name.trim() ? group.name.trim() : 'Mahsulot';
   const rawDescription =
     typeof group?.description === 'string' && group.description.trim() ? group.description.trim() : null;
 
@@ -170,7 +170,7 @@ export function ProductDetails() {
       <div className={`${WRAPPER_CLASS} items-center justify-center px-6`}>
         <p className="mb-4 text-center font-['Onest'] text-[#565656]">{loadError}</p>
         <Link to="/" className={`${DS_TACTILE} inline-block font-['Onest'] font-semibold text-[#E54B4B]`}>
-          На главную
+          Bosh sahifaga
         </Link>
       </div>
     );
@@ -179,9 +179,9 @@ export function ProductDetails() {
   if (!group) {
     return (
       <div className={`${WRAPPER_CLASS} items-center justify-center px-6`}>
-        <p className="mb-4 text-center font-['Onest'] text-[#565656]">Товар не найден</p>
+        <p className="mb-4 text-center font-['Onest'] text-[#565656]">Mahsulot topilmadi</p>
         <Link to="/" className={`${DS_TACTILE} inline-block font-['Onest'] font-semibold text-[#E54B4B]`}>
-          На главную
+          Bosh sahifaga
         </Link>
       </div>
     );
@@ -194,7 +194,7 @@ export function ProductDetails() {
     useCartStore.getState().addItem({
       variantId: activeVariant.id,
       groupId: String(group.id),
-      name: String(group.name ?? 'Товар'),
+      name: String(group.name ?? 'Mahsulot'),
       sku: activeVariant.sku,
       price: activeVariant.price,
       quantity,
@@ -202,7 +202,7 @@ export function ProductDetails() {
       type: activeVariant.type || labelForType(''),
       image: typeof group.main_image === 'string' ? group.main_image.trim() || null : null,
     });
-    toast.success('Товар добавлен в корзину', { duration: 2600 });
+    toast.success("Mahsulot savatchaga qo'shildi", { duration: 2600 });
   };
 
   return (
@@ -226,7 +226,7 @@ export function ProductDetails() {
                 <div key={`${img.sort_order}-${img.url}-${i}`} className="relative h-full w-full shrink-0 snap-center">
                   <img
                     src={img.url}
-                    alt="Product"
+                    alt="Mahsulot"
                     className="absolute inset-0 h-full w-full object-cover"
                     draggable={false}
                   />
@@ -247,7 +247,7 @@ export function ProductDetails() {
             {mainImage ?
               <img
                 src={mainImage}
-                alt="Product"
+                alt="Mahsulot"
                 className="absolute inset-0 h-full w-full object-cover"
                 draggable={false}
               />
@@ -267,16 +267,16 @@ export function ProductDetails() {
         </p>
 
         <p className="mb-6 leading-relaxed font-['Onest'] text-[clamp(14px,3.5vw,18px)] text-[#565656]">
-          {rawDescription || 'Описание отсутствует'}
+          {rawDescription || "Ta'rif keltirilmagan"}
         </p>
 
         {variants.length === 0 ? (
-          <p className="font-['Onest'] text-[clamp(14px,3.5vw,18px)] text-[#565656]">Нет доступных вариантов для заказа</p>
+          <p className="font-['Onest'] text-[clamp(14px,3.5vw,18px)] text-[#565656]">Buyurtma uchun mavjud variantlar yo'q</p>
         ) : (
           <>
             {showTypeSelector ?
               <div className="mb-6">
-                <p className="mb-2 font-['Onest'] text-[clamp(14px,3.5vw,18px)] font-medium text-[#565656]">Вариант</p>
+                <p className="mb-2 font-['Onest'] text-[clamp(14px,3.5vw,18px)] font-medium text-[#565656]">Variant</p>
                 <div className="flex flex-wrap gap-2">
                   {typeOptions.map((t) => {
                     const active = selectedType === t;
@@ -296,7 +296,7 @@ export function ProductDetails() {
             : null}
 
             <div className="mb-3">
-              <p className="mb-2 font-['Onest'] text-[clamp(14px,3.5vw,18px)] font-medium text-[#565656]">Цвет</p>
+              <p className="mb-2 font-['Onest'] text-[clamp(14px,3.5vw,18px)] font-medium text-[#565656]">Rang</p>
               <div className="flex flex-wrap items-center gap-3">
                 {colorOptions.map((c) => {
                   const hex = resolveColorHex(c);
@@ -337,7 +337,7 @@ export function ProductDetails() {
             type="button"
             onClick={() => setQuantity((q) => Math.max(1, q - 1))}
             className={`${DS_TACTILE} flex h-9 w-9 items-center justify-center rounded-lg border-none bg-transparent p-0 text-[#1A1A1A]`}
-            aria-label="Меньше"
+            aria-label="Kamaytirish"
           >
             <Minus className="h-5 w-5" strokeWidth={2} />
           </button>
@@ -348,7 +348,7 @@ export function ProductDetails() {
             type="button"
             onClick={() => setQuantity((q) => q + 1)}
             className={`${DS_TACTILE} flex h-9 w-9 items-center justify-center rounded-lg border-none bg-transparent p-0 text-[#1A1A1A]`}
-            aria-label="Больше"
+            aria-label="Oshirish"
           >
             <Plus className="h-5 w-5" strokeWidth={2} />
           </button>
@@ -359,7 +359,7 @@ export function ProductDetails() {
           onClick={handleAddToCart}
           className={`${DS_TACTILE} flex h-[48px] flex-1 items-center justify-center gap-2 rounded-[13px] border-none bg-[#E54B4B] font-['Onest'] text-[clamp(14px,3.5vw,18px)] font-medium text-white outline-none disabled:pointer-events-none disabled:opacity-45`}
         >
-          В корзину
+          Savatchaga
         </button>
       </div>
     </div>

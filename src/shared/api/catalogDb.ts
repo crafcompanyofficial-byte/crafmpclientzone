@@ -41,7 +41,7 @@ export async function fetchCategories(
   catalogType: CatalogTypeParam
 ): Promise<{ data: CategoryDbRow[]; error: string | null }> {
   const supabase = getSupabase();
-  if (!supabase) return { data: [], error: 'Supabase не настроен' };
+  if (!supabase) return { data: [], error: 'Supabase sozlanmagan' };
 
   const { data, error } = await supabase
     .from('categories')
@@ -61,7 +61,7 @@ export async function fetchCategories(
 
 export async function fetchSubcategories(categoryId: string): Promise<{ data: SubcategoryDbRow[]; error: string | null }> {
   const supabase = getSupabase();
-  if (!supabase) return { data: [], error: 'Supabase не настроен' };
+  if (!supabase) return { data: [], error: 'Supabase sozlanmagan' };
 
   const { data, error } = await supabase
     .from('subcategories')
@@ -120,7 +120,7 @@ export async function fetchProductGroupsWithMinPrice(opts: FetchGroupsOpts): Pro
   error: string | null;
 }> {
   const supabase = getSupabase();
-  if (!supabase) return { data: [], error: 'Supabase не настроен' };
+  if (!supabase) return { data: [], error: 'Supabase sozlanmagan' };
 
   const groupFields =
     'id, name, description, block_name, category_id, subcategory_id, main_image, is_new';
@@ -169,13 +169,13 @@ function minPriceAndSkuFromEmbeddedVariants(raw: unknown): { minPrice: number; s
   return { minPrice: min, sku };
 }
 
-/** Homepage / catalog «Новинки»: direct `product_groups` + embedded variant prices where supported. */
+/** Homepage / catalog new items: direct `product_groups` + embedded variant prices where supported. */
 export async function fetchNewProductGroups(limit?: number): Promise<{
   data: GroupsWithPrices[];
   error: string | null;
 }> {
   const supabase = getSupabase();
-  if (!supabase) return { data: [], error: 'Supabase не настроен' };
+  if (!supabase) return { data: [], error: 'Supabase sozlanmagan' };
 
   const selectNested =
     'id, name, block_name, main_image, is_new, category_id, subcategory_id, product_variants(id, price, sku)';
@@ -362,8 +362,9 @@ export async function fetchProductDetails(groupId: string): Promise<{
   error: string | null;
 }> {
   const supabase = getSupabase();
-  if (!supabase) return { group: null, variants: [], images: [], error: 'Supabase не настроен' };
-  if (!groupId?.trim()) return { group: null, variants: [], images: [], error: 'Нет id товара' };
+  if (!supabase) return { group: null, variants: [], images: [], error: 'Supabase sozlanmagan' };
+  if (!groupId?.trim())
+    return { group: null, variants: [], images: [], error: "Mahsulot ID yo'q" };
 
   const { data: grp, error: gErr } = await supabase.from('product_groups').select('*').eq('id', groupId.trim()).maybeSingle();
 

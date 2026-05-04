@@ -22,7 +22,7 @@ function isoDaysAgo(days: number): string {
 function ruDisplay(iso: string): string {
   const [y, m, day] = iso.split('-').map(Number);
   const d = new Date(y, m - 1, day);
-  return d.toLocaleDateString('ru-RU', { day: 'numeric', month: 'short', year: 'numeric' });
+  return d.toLocaleDateString('uz-UZ', { day: 'numeric', month: 'short', year: 'numeric' });
 }
 
 function buildSeedOrders(): OrderHistoryItem[] {

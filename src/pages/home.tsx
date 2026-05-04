@@ -10,6 +10,18 @@ import { DS_FONT_ONEST, DS_TACTILE, DS_TEXT_SECONDARY } from '../shared/ui/desig
 
 const CARD_SHADOW = 'shadow-[0px_2px_8px_0px_rgba(0,0,0,0.08)]';
 
+function levelShortLabelUz(level?: string): string {
+  switch ((level ?? 'silver').toLowerCase()) {
+    case 'bronze':
+      return 'Bronza';
+    case 'gold':
+      return 'Oltin';
+    case 'silver':
+    default:
+      return 'Kumush';
+  }
+}
+
 const getLevelStyles = (level?: string) => {
   const normalizedLevel = level?.toLowerCase() || 'silver';
   switch (normalizedLevel) {
@@ -133,10 +145,8 @@ export function Home() {
     totalQty === 0
       ? "Bo'sh"
       : totalQty === 1
-        ? '1 товар'
-        : totalQty < 5
-          ? `${totalQty} товара`
-          : `${totalQty} товаров`;
+        ? '1 dona'
+        : `${totalQty} dona`;
 
   return (
     <div className={`flex min-h-full flex-1 flex-col pb-8 pt-[60px] ${DS_FONT_ONEST}`}>
@@ -149,21 +159,21 @@ export function Home() {
           <div className={`flex w-full items-center justify-between rounded-[20px] bg-white p-[16px] ${CARD_SHADOW}`}>
             <div className="flex min-w-0 items-center gap-[12px] md:gap-[16px]">
               <div className="flex h-[46px] w-[46px] shrink-0 items-center justify-center rounded-full bg-[#E54B4B] text-[clamp(18px,4.5vw,24px)] font-bold uppercase text-white md:h-[56px] md:w-[56px] font-['Onest']">
-                {user?.name?.charAt(0) || 'И'}
+                {user?.name?.charAt(0) || 'M'}
               </div>
               <div className="flex min-w-0 flex-col">
                 <span className="font-['Onest'] text-[clamp(16px,4vw,20px)] font-semibold leading-tight text-[#1A1A1A] line-clamp-1">
-                  {user?.name || 'Иван Петров'}
+                  {user?.name || 'Mehmon'}
                 </span>
                 <span className="mt-0.5 font-['Onest'] text-[clamp(12px,3vw,14px)] text-[#A1A1A1]">
-                  {user?.phone || '+7 (999) 123-45-67'}
+                  {user?.phone || '+998'}
                 </span>
               </div>
             </div>
             <div
               className={`px-[10px] py-[4px] rounded-full text-[clamp(10px,2.5vw,12px)] font-medium font-['Onest'] lowercase tracking-wide shrink-0 ml-2 ${getLevelStyles(user?.level)}`}
             >
-              {user?.level || 'silver'}
+              {levelShortLabelUz(user?.level)}
             </div>
           </div>
         </Link>
@@ -210,7 +220,7 @@ export function Home() {
                 let slideInner: ReactNode;
                 if (href?.startsWith('/')) {
                   slideInner = (
-                    <Link to={href} className={`${DS_TACTILE} block ${mediaClass}`} aria-label="Banner">
+                    <Link to={href} className={`${DS_TACTILE} block ${mediaClass}`} aria-label="Banner — reklama">
                       {image}
                     </Link>
                   );
@@ -221,7 +231,7 @@ export function Home() {
                       target="_blank"
                       rel="noopener noreferrer"
                       className={`${DS_TACTILE} block ${mediaClass}`}
-                      aria-label="Banner"
+                      aria-label="Banner — reklama"
                     >
                       {image}
                     </a>
@@ -264,7 +274,7 @@ export function Home() {
             <Link
               to="/catalog?type=profiles"
               className={`${DS_TACTILE} block aspect-[189/105] w-full overflow-hidden rounded-[25px]`}
-              aria-label="Профили"
+              aria-label="Profillar"
             >
               <img
                 src="/profiles-button.png"
@@ -275,13 +285,13 @@ export function Home() {
                 }}
               />
             </Link>
-            <span className={`${DS_FONT_ONEST} font-semibold text-[clamp(16px,4vw,16px)] text-[#1A1A1A]`}>Профили</span>
+            <span className={`${DS_FONT_ONEST} font-semibold text-[clamp(16px,4vw,16px)] text-[#1A1A1A]`}>Profillar</span>
           </div>
           <div className="flex flex-col items-center gap-[7px]">
             <Link
               to="/catalog?type=accessories"
               className={`${DS_TACTILE} block aspect-[189/105] w-full overflow-hidden rounded-[25px]`}
-              aria-label="Аксессуары"
+              aria-label="Aksessuarlar"
             >
               <img
                 src="/accessories-button.png"
@@ -292,14 +302,14 @@ export function Home() {
                 }}
               />
             </Link>
-            <span className={`${DS_FONT_ONEST} font-semibold text-[clamp(16px,4vw,16px)] text-[#1A1A1A]`}>Аксессуары</span>
+            <span className={`${DS_FONT_ONEST} font-semibold text-[clamp(16px,4vw,16px)] text-[#1A1A1A]`}>Aksessuarlar</span>
           </div>
         </div>
 
         <div
           className={`flex flex-col gap-[20px] rounded-[25px] ${CARD_SHADOW} bg-white p-[22px] ${DS_FONT_ONEST}`}
         >
-          <span className={`${DS_FONT_ONEST} text-[18px] font-semibold text-[#1A1A1A]`}>Ваша корзина</span>
+          <span className={`${DS_FONT_ONEST} text-[18px] font-semibold text-[#1A1A1A]`}>Sizning savatchangiz</span>
 
           <button
             type="button"
@@ -311,14 +321,14 @@ export function Home() {
                 🛒
               </span>
               <div className="flex flex-col gap-[2px] min-w-0">
-                <span className={`${DS_TEXT_SECONDARY}`}>Товары в корзине</span>
+                <span className={`${DS_TEXT_SECONDARY}`}>Savatchadagi tovarlar</span>
                 <span className={`${DS_FONT_ONEST} text-[18px] font-semibold text-[#1A1A1A]`}>
                   {cartQtyBottom}
                 </span>
               </div>
             </div>
             <span className="shrink-0 text-[30px] font-semibold tabular-nums text-[#E54B4B]">
-              {subtotal > 0 ? `${subtotal.toLocaleString('ru-RU')} $` : '—'}
+              {subtotal > 0 ? `${subtotal.toLocaleString('uz-UZ')} $` : '—'}
             </span>
           </button>
         </div>
@@ -329,14 +339,14 @@ export function Home() {
               <h2
                 className={`${DS_FONT_ONEST} min-w-0 shrink truncate font-semibold text-[clamp(18px,4.5vw,18px)] text-[#1A1A1A]`}
               >
-                📦 Новинки
+                📦 Yangi tovarlar
               </h2>
               <button
                 type="button"
                 onClick={() => navigate('/catalog?filter=new')}
                 className={`${DS_TACTILE} shrink-0 origin-center border-none bg-transparent p-0 font-['Onest'] text-[16px] font-semibold text-[#E54B4B] outline-none`}
               >
-                Все →
+                Barchasi →
               </button>
             </div>
             <div className="flex overflow-x-auto gap-3 pb-4 no-scrollbar">

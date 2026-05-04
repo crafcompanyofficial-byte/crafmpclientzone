@@ -16,11 +16,11 @@ function levelConfig(level: CustomerLevel): {
 } {
   switch (level) {
     case 'silver':
-      return { bgImage: '/silver-bg.png', target: 1500, next: 'Gold', levelName: 'Silver' };
+      return { bgImage: '/silver-bg.png', target: 1500, next: 'Oltin', levelName: 'Kumush' };
     case 'gold':
-      return { bgImage: '/gold-bg.png', target: 4000, next: 'Platinum', levelName: 'Gold' };
+      return { bgImage: '/gold-bg.png', target: 4000, next: 'Platina', levelName: 'Oltin' };
     default:
-      return { bgImage: '/bronze-bg.png', target: 500, next: 'Silver', levelName: 'Bronze' };
+      return { bgImage: '/bronze-bg.png', target: 500, next: 'Kumush', levelName: 'Bronza' };
   }
 }
 
@@ -40,7 +40,7 @@ export function LoyaltyCard({ clickable }: LoyaltyCardProps) {
   const pts = Number.isFinite(user?.points) ? user!.points : 0;
   const { bgImage, target, next, levelName } = levelConfig(tier);
   const pct = progressPct(pts, target);
-  const caption = `${Math.min(pts, target)} / ${target} pts`;
+  const caption = `${Math.min(pts, target)} / ${target} ball`;
 
   const bgStyle = {
     backgroundImage: `url(${bgImage})`,
@@ -58,7 +58,7 @@ export function LoyaltyCard({ clickable }: LoyaltyCardProps) {
         </div>
         <div className="mt-2">
           <p className="font-['Onest'] text-[11px] font-medium leading-snug text-white/90">
-            Progress to {next} · {caption}
+            {next} bosqichigacha · {caption}
           </p>
           <div className="mt-2 h-[6px] w-full overflow-hidden rounded-full bg-black/20">
             <div

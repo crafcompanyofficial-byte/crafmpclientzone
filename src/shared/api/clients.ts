@@ -21,7 +21,7 @@ function isNoRowsError(err: { code?: string } | null): boolean {
 export async function syncClientDealer(telegram_id: number, dealer_id: string): Promise<SyncClientDealerResult> {
   const supabase = getSupabase();
   if (!supabase) {
-    return { clientId: null, error: 'Supabase не настроен' };
+    return { clientId: null, error: 'Supabase sozlanmagan' };
   }
 
   const { data: profileFound, error: profileSelectError } = await supabase
@@ -120,7 +120,7 @@ export async function fetchClientProfile(clientId: string): Promise<{
 }> {
   const supabase = getSupabase();
   if (!supabase) {
-    return { displayName: null, phone: null, error: 'Supabase не настроен' };
+    return { displayName: null, phone: null, error: 'Supabase sozlanmagan' };
   }
 
   const { data, error } = await supabase

@@ -115,7 +115,10 @@ export function isValidYandexPlacemarkPair(value: unknown): value is [number, nu
 export async function fetchActiveDealers(): Promise<{ data: DealerMapPoint[]; error: string | null }> {
   const supabase = getSupabase();
   if (!supabase) {
-    return { data: [], error: 'Supabase не настроен (VITE_SUPABASE_URL / VITE_SUPABASE_ANON_KEY)' };
+    return {
+      data: [],
+      error: 'Supabase sozlanmagan (VITE_SUPABASE_URL / VITE_SUPABASE_ANON_KEY)',
+    };
   }
 
   const { data: rows, error } = await supabase
