@@ -1,7 +1,6 @@
 import { FormEvent, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getSupabase } from '../shared/api/supabase';
-import { useUserStore, normalizeCustomerRow } from '../shared/store/useUserStore';
+import { useUserStore } from '../shared/store/useUserStore';
 import {
   DS_BTN_PRIMARY,
   DS_FONT_ONEST,
@@ -12,25 +11,20 @@ import {
 
 export function Onboarding() {
   const navigate = useNavigate();
-  const setUser = useUserStore((s) => s.setUser);
+  const onboardingDraft = useUserStore((s) => s.onboardingDraft);
+  const setOnboardingDraft = useUserStore((s) => s.setOnboardingDraft);
 
-  const [name, setName] = useState('');
-  const [phone, setPhone] = useState('');
-  const [region, setRegion] = useState('');
-  const [city, setCity] = useState('');
-  const [submitting, setSubmitting] = useState(false);
+  const [name, setName] = useState(() => onboardingDraft?.name ?? '');
+  const [phone, setPhone] = useState(() => onboardingDraft?.phone ?? '');
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  const onSubmit = async (event: FormEvent) => {
+  const onSubmit = (event: FormEvent) => {
     event.preventDefault();
-    if (submitting) return;
 
     const trimmedName = name.trim();
     const trimmedPhone = phone.trim();
-    const trimmedRegion = region.trim();
-    const trimmedCity = city.trim();
 
-    if (!trimmedName || !trimmedPhone || !trimmedRegion || !trimmedCity) {
+    if (!trimmedName || !trimmedPhone) {
       setErrorMessage('Iltimos, barcha maydonlarni to‘ldiring');
       return;
     }
@@ -49,62 +43,9 @@ export function Onboarding() {
       return;
     }
 
-    const supabase = getSupabase();
-    if (!supabase) {
-      setErrorMessage('Supabase konfiguratsiyasi topilmadi');
-      return;
-    }
-
-    setSubmitting(true);
     setErrorMessage(null);
-
-    try {
-      const { data, error } = await supabase
-        .from('customers')
-        .insert({
-          telegram_id,
-          name: trimmedName,
-          phone: trimmedPhone,
-          region: trimmedRegion,
-          city: trimmedCity,
-          points: 0,
-          level: 'bronze',
-          is_blocked: false,
-        })
-        .select()
-        .single();
-
-      if (error) {
-        console.error('[Onboarding] Supabase insert error (full object):', error);
-        setErrorMessage(
-          error.message?.trim()
-            ? `Maʼlumotlarni saqlashda xatolik: ${error.message}`
-            : 'Maʼlumotlarni saqlashda xatolik (tafsilotlar konsolda)'
-        );
-        return;
-      }
-
-      if (!data || typeof data !== 'object') {
-        console.error('[Onboarding] Supabase insert returned no row:', { data });
-        setErrorMessage('Mijoz yaratildi, ammo javob kelmay qoldi (konsolni tekshiring)');
-        return;
-      }
-
-      const customer = normalizeCustomerRow(data as Record<string, unknown>);
-      if (!customer.id) {
-        console.error('[Onboarding] Insert row missing id:', data);
-        setErrorMessage('Mijoz ID qaytarilmadi');
-        return;
-      }
-
-      setUser(customer);
-      navigate('/', { replace: true });
-    } catch (err) {
-      console.error('[Onboarding] Unexpected error:', err);
-      setErrorMessage('Kutilmagan xatolik (tafsilotlar konsolda)');
-    } finally {
-      setSubmitting(false);
-    }
+    setOnboardingDraft({ name: trimmedName, phone: trimmedPhone });
+    navigate('/map-selection?mode=onboarding');
   };
 
   return (
@@ -148,46 +89,12 @@ export function Onboarding() {
             />
           </div>
 
-          <div>
-            <label htmlFor="region" className={`mb-2 block ${DS_TEXT_SECONDARY}`}>
-              Viloyat
-            </label>
-            <input
-              id="region"
-              type="text"
-              value={region}
-              onChange={(event) => setRegion(event.target.value)}
-              className={DS_INPUT}
-              placeholder="Masalan: Toshkent viloyati"
-              autoComplete="address-level1"
-            />
-          </div>
-
-          <div>
-            <label htmlFor="city" className={`mb-2 block ${DS_TEXT_SECONDARY}`}>
-              Shahar
-            </label>
-            <input
-              id="city"
-              type="text"
-              value={city}
-              onChange={(event) => setCity(event.target.value)}
-              className={DS_INPUT}
-              placeholder="Masalan: Chirchiq"
-              autoComplete="address-level2"
-            />
-          </div>
-
           {errorMessage ? (
             <p className={`text-[14px] font-medium text-[#DC2626] ${DS_FONT_ONEST}`}>{errorMessage}</p>
           ) : null}
 
-          <button
-            type="submit"
-            disabled={submitting}
-            className={`${DS_BTN_PRIMARY} disabled:opacity-70 disabled:active:scale-100 disabled:cursor-not-allowed`}
-          >
-            {submitting ? 'Yuborilmoqda...' : 'Boshlash'}
+          <button type="submit" className={DS_BTN_PRIMARY}>
+            Keyingisi
           </button>
         </form>
       </div>

@@ -1,34 +1,44 @@
 /**
  * Supabase Edge Function: Telegram outbound notifications (Deno).
  *
- * Trigger via HTTP POST (e.g. Supabase Database Webhooks pointing at this function URL).
+ * Trigger: HTTP POST from Supabase Database Webhooks on `orders` / `customers` updates.
  *
- * SECURITY — never commit secrets:
- * - `TELEGRAM_BOT_TOKEN` must be set in Supabase Dashboard → Project Settings → Edge Functions → Secrets,
- *   or via CLI: `supabase secrets set TELEGRAM_BOT_TOKEN=your_bot_token`
- * - Do NOT put the token in frontend code or in this repo.
+ * Secrets (Dashboard → Edge Functions → Secrets, or `supabase secrets set`):
+ * - `TELEGRAM_BOT_TOKEN`
+ * - `SUPABASE_URL` (usually auto-provided)
+ * - `SUPABASE_SERVICE_ROLE_KEY` (usually auto-provided)
  */
+
+import { createClient, type SupabaseClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const TG_API = "https://api.telegram.org";
 
 type DbWebhookPayload = {
-  type?: "INSERT" | "UPDATE" | "DELETE";
-  schema?: string;
+  type?: string;
   table?: string;
+  schema?: string;
   record?: Record<string, unknown>;
   old_record?: Record<string, unknown>;
 };
 
-/** Optional explicit discriminator your DB trigger/webhook payload can send. */
-type NotificationPayload = DbWebhookPayload & {
-  notification_type?:
-    | "order_confirmation"
-    | "points_credited"
-    | "level_up";
-  /** Target Telegram chat — set from webhook / trigger payload. */
-  chat_id?: string;
-  telegram_chat_id?: string;
-};
+type HandlerResult =
+  | { action: "send"; chatId: string; text: string }
+  | { action: "skip"; reason: string }
+  | { action: "error"; message: string; status?: number };
+
+function normStatus(s: unknown): string {
+  return String(s ?? "").trim();
+}
+
+function isConfirmedStatus(status: unknown): boolean {
+  const v = normStatus(status);
+  return v === "confirmed" || v === "completed" || v === "Tasdiqlangan";
+}
+
+function isCancelledStatus(status: unknown): boolean {
+  const v = normStatus(status);
+  return v === "cancelled" || v === "Bekor qilingan";
+}
 
 async function sendTelegramMessage(chatId: string, text: string): Promise<void> {
   const token = Deno.env.get("TELEGRAM_BOT_TOKEN");
@@ -59,80 +69,102 @@ async function sendTelegramMessage(chatId: string, text: string): Promise<void> 
   }
 }
 
-function pickChatId(payload: NotificationPayload): string | null {
-  const direct = payload.chat_id ?? payload.telegram_chat_id;
-  if (direct != null && String(direct).trim() !== "") {
-    return String(direct).trim();
+async function handleOrdersUpdate(
+  payload: DbWebhookPayload,
+  supabase: SupabaseClient,
+): Promise<HandlerResult> {
+  const record = payload.record;
+  const oldRecord = payload.old_record;
+  if (!record || !oldRecord) {
+    return { action: "skip", reason: "orders UPDATE missing record or old_record" };
   }
-  const fromRecord = payload.record?.telegram_chat_id ??
-    payload.record?.chat_id;
-  if (fromRecord != null && String(fromRecord).trim() !== "") {
-    return String(fromRecord).trim();
+
+  const newStatus = record.status;
+  const oldStatus = oldRecord.status;
+
+  const toConfirmed =
+    isConfirmedStatus(newStatus) && !isConfirmedStatus(oldStatus);
+  const toCancelled =
+    isCancelledStatus(newStatus) && !isCancelledStatus(oldStatus);
+
+  if (!toConfirmed && !toCancelled) {
+    return {
+      action: "skip",
+      reason: "orders status change does not match confirmed/cancelled transition",
+    };
   }
-  return null;
+
+  const customerId = record.customer_id;
+  if (customerId == null || String(customerId).trim() === "") {
+    return { action: "skip", reason: "orders row missing customer_id" };
+  }
+
+  const orderId = record.id;
+  if (orderId == null || String(orderId).trim() === "") {
+    return { action: "skip", reason: "orders row missing id" };
+  }
+
+  const { data: customer, error } = await supabase
+    .from("customers")
+    .select("telegram_id")
+    .eq("id", customerId)
+    .maybeSingle();
+
+  if (error) {
+    return {
+      action: "error",
+      message: `customers lookup failed: ${error.message}`,
+    };
+  }
+
+  const telegramId = customer?.telegram_id;
+  if (telegramId == null || telegramId === "") {
+    return { action: "skip", reason: "customer has no telegram_id" };
+  }
+
+  const shortId = String(orderId).slice(0, 8).toUpperCase();
+  const text = toConfirmed
+    ? `✅ Sizning buyurtmangiz (#${shortId}) tasdiqlandi va ishlashga o'tdi!`
+    : `❌ Sizning buyurtmangiz (#${shortId}) bekor qilindi.`;
+
+  return { action: "send", chatId: String(telegramId), text };
 }
 
-/**
- * Placeholder routing: map webhook / trigger payloads to message text.
- * Replace with real copy, i18n, and DB fields once your schema is final.
- */
-function resolveNotification(
-  payload: NotificationPayload,
-): { chatId: string; text: string } | null {
-  const chatId = pickChatId(payload);
-  if (!chatId) return null;
-
-  const explicit = payload.notification_type;
-  if (explicit === "order_confirmation") {
-    return {
-      chatId,
-      text: "✅ Sizning buyurtmangiz tasdiqlandi...",
-    };
-  }
-  if (explicit === "points_credited") {
-    return {
-      chatId,
-      text: "💰 Sizga bonus ballar taqdim etildi...",
-    };
-  }
-  if (explicit === "level_up") {
-    return {
-      chatId,
-      text: "🏆 Tabriklaymiz! Sizning darajangiz ko'tarildi...",
-    };
+function handleCustomersUpdate(payload: DbWebhookPayload): HandlerResult {
+  const record = payload.record;
+  const oldRecord = payload.old_record;
+  if (!record || !oldRecord) {
+    return { action: "skip", reason: "customers UPDATE missing record or old_record" };
   }
 
-  const table = payload.table;
-  const op = payload.type;
-
-  // Example inference from Database Webhooks (adjust table/column names to match your schema)
-  if (table === "orders" && op === "INSERT") {
-    return {
-      chatId,
-      text: "✅ Sizning buyurtmangiz tasdiqlandi...",
-    };
-  }
-  if (table === "customer_points_history" || table === "bonus_transactions") {
-    if (op === "INSERT") {
-      return {
-        chatId,
-        text: "💰 Sizga bonus ballar taqdim etildi...",
-      };
-    }
-  }
-  if (
-    table === "customers" && op === "UPDATE" &&
-    payload.old_record?.level !== undefined &&
-    payload.record?.level !== undefined &&
-    payload.old_record.level !== payload.record.level
-  ) {
-    return {
-      chatId,
-      text: "🏆 Tabriklaymiz! Sizning darajangiz ko'tarildi...",
-    };
+  if (record.level === oldRecord.level) {
+    return { action: "skip", reason: "level unchanged" };
   }
 
-  return null;
+  const telegramId = record.telegram_id;
+  if (telegramId == null || telegramId === "") {
+    return { action: "skip", reason: "customer has no telegram_id" };
+  }
+
+  const levelUpper = String(record.level ?? "").toUpperCase();
+  const text =
+    `🎉 Tabriklaymiz! Sizning yangi reytingingiz: ${levelUpper}`;
+
+  return { action: "send", chatId: String(telegramId), text };
+}
+
+async function routeWebhook(
+  payload: DbWebhookPayload,
+  supabase: SupabaseClient,
+): Promise<HandlerResult> {
+  const op = String(payload.type ?? "").toUpperCase();
+  if (payload.table === "orders" && op === "UPDATE") {
+    return handleOrdersUpdate(payload, supabase);
+  }
+  if (payload.table === "customers" && op === "UPDATE") {
+    return handleCustomersUpdate(payload);
+  }
+  return { action: "skip", reason: "unsupported table or operation" };
 }
 
 Deno.serve(async (req) => {
@@ -144,27 +176,49 @@ Deno.serve(async (req) => {
     return json({ error: "Method Not Allowed" }, 405);
   }
 
+  let payload: DbWebhookPayload;
   try {
-    const payload = await req.json() as NotificationPayload;
-    const resolved = resolveNotification(payload);
+    const body = await req.json();
+    if (body === null || typeof body !== "object" || Array.isArray(body)) {
+      return json({ error: "Invalid JSON body: expected an object" }, 400);
+    }
+    payload = body as DbWebhookPayload;
+  } catch {
+    return json({ error: "Invalid JSON body" }, 400);
+  }
 
-    if (!resolved) {
-      return json(
-        {
-          error: "Nothing to send — missing chat_id or unknown payload shape",
-          hint:
-            "Set chat_id / telegram_chat_id on the payload or include notification_type + chat_id.",
-        },
-        422,
-      );
+  const supabaseUrl = Deno.env.get("SUPABASE_URL")?.trim();
+  const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")?.trim();
+  if (!supabaseUrl || !serviceKey) {
+    return json(
+      {
+        error:
+          "Server misconfigured: SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY missing",
+      },
+      500,
+    );
+  }
+
+  const supabase = createClient(supabaseUrl, serviceKey);
+
+  try {
+    const result = await routeWebhook(payload, supabase);
+
+    if (result.action === "skip") {
+      return json({ ok: true, skipped: true, reason: result.reason }, 200);
     }
 
-    await sendTelegramMessage(resolved.chatId, resolved.text);
-    return json({ ok: true, sent_to: resolved.chatId });
+    if (result.action === "error") {
+      const status = result.status ?? 500;
+      return json({ ok: false, error: result.message }, status);
+    }
+
+    await sendTelegramMessage(result.chatId, result.text);
+    return json({ ok: true, sent_to: result.chatId }, 200);
   } catch (e) {
     const message = e instanceof Error ? e.message : String(e);
     console.error("telegram-bot error:", message);
-    return json({ error: message }, 500);
+    return json({ ok: false, error: message }, 500);
   }
 });
 

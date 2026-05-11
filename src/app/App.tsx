@@ -11,7 +11,7 @@ import { Catalog } from '../pages/catalog';
 import { ProductDetails } from '../pages/product-details';
 import { Cart } from '../pages/cart';
 import { Profile } from './screens/Profile';
-import { MapSelection } from '../pages/map-selection';
+import { MapSelectionPage } from '../pages/map-selection';
 import { PointsHistory } from '../pages/points-history';
 import { MainLayout } from './AuthGuard';
 
@@ -81,7 +81,7 @@ function RoutedAppShell() {
             <Route path="/product/:id" element={<ProductDetails />} />
             <Route path="/cart" element={<Cart />} />
             <Route path="/profile" element={<Profile />} />
-            <Route path="/map-selection" element={<MapSelection />} />
+            <Route path="/map-selection" element={<MapSelectionPage />} />
             <Route path="/points-history" element={<PointsHistory />} />
           </Route>
           <Route path="*" element={<Navigate to="/" replace />} />

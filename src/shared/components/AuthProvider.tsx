@@ -7,6 +7,14 @@ import { useUserStore, normalizeCustomerRow } from '../store/useUserStore';
 const TELEGRAM_OPEN_ERROR = 'Iltimos, ilovani Telegram orqali oching';
 const ONBOARDING_ROUTE = '/onboarding';
 
+function isAllowedWithoutCustomer(pathname: string, search: string): boolean {
+  if (pathname === ONBOARDING_ROUTE) return true;
+  if (pathname === '/map-selection') {
+    return new URLSearchParams(search).get('mode') === 'onboarding';
+  }
+  return false;
+}
+
 function isNoRowsError(err: { code?: string } | null): boolean {
   return err?.code === 'PGRST116';
 }
@@ -106,7 +114,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     const isOnboardingRoute = location.pathname === ONBOARDING_ROUTE;
 
-    if (!user && !isOnboardingRoute) {
+    if (!user && !isAllowedWithoutCustomer(location.pathname, location.search)) {
       navigate(ONBOARDING_ROUTE, { replace: true });
       return;
     }
@@ -114,7 +122,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (user && isOnboardingRoute) {
       navigate('/', { replace: true });
     }
-  }, [errorMessage, isLoading, location.pathname, navigate, user]);
+  }, [errorMessage, isLoading, location.pathname, location.search, navigate, user]);
 
   if (isLoading) {
     return (

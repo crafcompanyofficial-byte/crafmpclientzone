@@ -3,6 +3,7 @@ import { Loader2 } from 'lucide-react';
 import { LoyaltyCard } from '../components/LoyaltyCard';
 import { getSupabase, isSupabaseConfigured } from '../shared/api/supabase';
 import { useUserStore } from '../shared/store/useUserStore';
+import { formatLoyaltyPoints } from '../shared/lib/formatLoyaltyPoints';
 import { DS_FONT_ONEST, DS_TEXT_MAIN, DS_TEXT_SECONDARY } from '../shared/ui/designTokens';
 
 type OrderPtsRow = {
@@ -10,8 +11,11 @@ type OrderPtsRow = {
   total_amount?: number | null;
   confirmed_at?: string | null;
   created_at?: string | null;
-  order_code?: string | null;
 };
+
+function orderShortId(id: string): string {
+  return `#${id.slice(0, 8).toUpperCase()}`;
+}
 
 function thirtyDaysAgoIso(): Date {
   const d = new Date();
@@ -61,9 +65,9 @@ export function PointsHistory() {
     const since = thirtyDaysAgoIso();
     const { data, error: fetchError } = await supabase
       .from('orders')
-      .select('id, total_amount, confirmed_at, created_at, order_code')
+      .select('id, total_amount, confirmed_at, created_at')
       .eq('customer_id', user.id)
-      .eq('status', 'confirmed');
+      .in('status', ['confirmed', 'completed', 'Tasdiqlangan']);
 
     if (fetchError) {
       setError(fetchError.message);
@@ -112,7 +116,7 @@ export function PointsHistory() {
         <div className="mb-[23px] rounded-[25px] bg-white p-[20px] shadow-[0px_2px_8px_0px_rgba(0,0,0,0.08)]">
           <h2 className={`mb-3 ${DS_TEXT_MAIN} text-[18px] font-semibold`}>Shartlar</h2>
           <p className={DS_TEXT_SECONDARY}>
-            Sizning haridingizdan 1% keshbek ball sifatida qaytadi. 1 ball = 100$.
+            Sizning haridingizdan 1% keshbek ball sifatida qaytadi. 1 ball = 10$.
           </p>
         </div>
 
@@ -130,7 +134,8 @@ export function PointsHistory() {
           </p>
         ) : (
           orders.map((order) => {
-            const pts = Math.floor(Number(order.total_amount ?? 0) / 100);
+            const pts = Number(order.total_amount ?? 0) / 10;
+            const ptsLabel = formatLoyaltyPoints(pts);
             const ts = orderTimestamp(order) ?? '';
             return (
               <div
@@ -138,11 +143,13 @@ export function PointsHistory() {
                 className="mb-[12px] flex items-center justify-between rounded-[20px] bg-white p-[16px] shadow-sm"
               >
                 <div className="min-w-0 pr-3 font-['Onest']">
-                  <p className="text-[14px] font-medium leading-tight text-[#666666]">Buyurtma</p>
+                  <p className="text-[14px] font-medium leading-tight text-[#666666]">
+                    {orderShortId(order.id)}
+                  </p>
                   <p className="text-[14px] leading-tight text-[#666666]">{shortDate(ts)}</p>
                 </div>
                 <span className="shrink-0 text-[16px] font-semibold text-[#4CAF50] font-['Onest'] whitespace-nowrap">
-                  +{pts} ball
+                  +{ptsLabel} ball
                 </span>
               </div>
             );

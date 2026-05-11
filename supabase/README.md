@@ -16,11 +16,13 @@ supabase link --project-ref <YOUR_PROJECT_REF>
 
 ### Secrets
 
-Configure the bot token on the server:
+Configure secrets on the server:
 
 ```bash
 supabase secrets set TELEGRAM_BOT_TOKEN=<your_bot_token_from_botfather>
 ```
+
+The `telegram-bot` function also uses **`SUPABASE_URL`** and **`SUPABASE_SERVICE_ROLE_KEY`** to resolve `customers.telegram_id` for order notifications. These are usually injected automatically in hosted Edge Functions; for local serve, ensure they exist in `supabase/.env.local` or your shell.
 
 You can confirm secrets in the Supabase Dashboard: **Project Settings → Edge Functions → Secrets**.
 

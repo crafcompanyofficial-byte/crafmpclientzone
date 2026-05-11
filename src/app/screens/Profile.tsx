@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Mail, MapPin, Phone, Send } from 'lucide-react';
 import { toast } from 'sonner';
 import { LoyaltyCard } from '../../components/LoyaltyCard';
@@ -17,6 +17,7 @@ import {
 const CARD_SHELL = `${DS_FONT_ONEST} rounded-[25px] bg-white p-[20px] shadow-[0px_2px_8px_0px_rgba(0,0,0,0.08)]`;
 
 export function Profile() {
+  const navigate = useNavigate();
   const user = useUserStore((s) => s.user);
   const setUser = useUserStore((s) => s.setUser);
   const clientRecordId = user?.id ?? null;
@@ -131,7 +132,7 @@ export function Profile() {
           </div>
         </div>
 
-        <LoyaltyCard clickable />
+        <LoyaltyCard clickable onClick={() => navigate('/points-history')} />
 
         <div className={`rounded-[20px] bg-white p-[16px] shadow-sm ${DS_FONT_ONEST}`}>
           <h3 className="mb-4 font-['Onest'] text-[16px] font-bold text-[#1A1A1A]">Qo&apos;llab-quvvatlash xizmati</h3>

@@ -1,5 +1,5 @@
-import { useMemo, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useEffect, useMemo, useState } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { ChevronRight } from 'lucide-react';
 import { toast } from 'sonner';
 import { UZBEKISTAN_REGIONS } from '../shared/data/uzbekistanRegions';
@@ -9,14 +9,43 @@ import { normalizeCustomerRow, useUserStore } from '../shared/store/useUserStore
 
 const LIST_ROW = `${DS_TACTILE} flex w-full min-w-0 items-center justify-between border-b border-gray-100 py-4 text-left font-['Onest'] text-[16px] font-medium text-[#1A1A1A] active:bg-gray-50 disabled:pointer-events-none disabled:opacity-60`;
 
-export function MapSelection() {
+export type MapSelectionMode = 'profile' | 'onboarding';
+
+export function MapSelectionPage() {
+  const [searchParams] = useSearchParams();
+  const user = useUserStore((s) => s.user);
+  const mode: MapSelectionMode = user
+    ? 'profile'
+    : searchParams.get('mode') === 'onboarding'
+      ? 'onboarding'
+      : 'profile';
+  return <MapSelection mode={mode} />;
+}
+
+type MapSelectionProps = {
+  mode: MapSelectionMode;
+};
+
+export function MapSelection({ mode }: MapSelectionProps) {
   const navigate = useNavigate();
   const user = useUserStore((s) => s.user);
   const setUser = useUserStore((s) => s.setUser);
+  const onboardingDraft = useUserStore((s) => s.onboardingDraft);
+  const updateOnboardingDraft = useUserStore((s) => s.updateOnboardingDraft);
+  const registerCustomer = useUserStore((s) => s.registerCustomer);
 
   const [selectedRegion, setSelectedRegion] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    if (mode !== 'onboarding') return;
+    const n = onboardingDraft?.name?.trim() ?? '';
+    const p = onboardingDraft?.phone?.trim() ?? '';
+    if (!n || !p) {
+      navigate('/onboarding', { replace: true });
+    }
+  }, [mode, onboardingDraft?.name, onboardingDraft?.phone, navigate]);
 
   const normalizedQuery = searchQuery.trim().toLowerCase();
 
@@ -34,38 +63,79 @@ export function MapSelection() {
   }, [selectedRegion, normalizedQuery]);
 
   const onSelectCity = async (city: string) => {
-    if (!user?.id || !selectedRegion) return;
-    const next = { ...user, region: selectedRegion, city };
-    setSaving(true);
+    if (!selectedRegion) return;
 
-    if (isSupabaseConfigured()) {
-      const supabase = getSupabase();
-      if (supabase) {
-        const { error } = await supabase
-          .from('customers')
-          .update({ region: selectedRegion, city })
-          .eq('id', user.id);
-        if (error) {
-          toast.error(error.message);
-          setSaving(false);
-          return;
-        }
-        const { data } = await supabase.from('customers').select('*').eq('id', user.id).single();
-        if (data && typeof data === 'object') {
-          setUser(normalizeCustomerRow(data as Record<string, unknown>));
+    if (mode === 'profile') {
+      if (!user?.id) return;
+      const next = { ...user, region: selectedRegion, city };
+      setSaving(true);
+
+      if (isSupabaseConfigured()) {
+        const supabase = getSupabase();
+        if (supabase) {
+          const { error } = await supabase
+            .from('customers')
+            .update({ region: selectedRegion, city })
+            .eq('id', user.id);
+          if (error) {
+            toast.error(error.message);
+            setSaving(false);
+            return;
+          }
+          const { data } = await supabase.from('customers').select('*').eq('id', user.id).single();
+          if (data && typeof data === 'object') {
+            setUser(normalizeCustomerRow(data as Record<string, unknown>));
+          } else {
+            setUser(next);
+          }
         } else {
           setUser(next);
         }
       } else {
         setUser(next);
       }
-    } else {
-      setUser(next);
+
+      setSaving(false);
+      toast.success('Joylashuv yangilandi');
+      navigate(-1);
+      return;
     }
 
+    const draft = onboardingDraft;
+    if (!draft?.name?.trim() || !draft?.phone?.trim()) {
+      navigate('/onboarding', { replace: true });
+      return;
+    }
+
+    const tgIdRaw =
+      window.Telegram?.WebApp?.initDataUnsafe?.user?.id ?? (import.meta.env.DEV ? 777777777 : null);
+    if (tgIdRaw === null || tgIdRaw === undefined) {
+      toast.error('Iltimos, ilovani Telegram orqali oching');
+      return;
+    }
+    const telegram_id = Number(tgIdRaw);
+    if (!Number.isFinite(telegram_id)) {
+      toast.error('Telegram identifikatori noto‘g‘ri formatda');
+      return;
+    }
+
+    setSaving(true);
+    const result = await registerCustomer({
+      telegram_id,
+      name: draft.name.trim(),
+      phone: draft.phone.trim(),
+      region: selectedRegion,
+      city,
+    });
     setSaving(false);
-    toast.success('Joylashuv yangilandi');
-    navigate(-1);
+
+    if (!result.ok) {
+      toast.error(result.message);
+      return;
+    }
+
+    toast.success('Xush kelibsiz');
+    navigate('/', { replace: true });
   };
 
   const pageTitle = selectedRegion ? 'Tanlash' : 'Tanlang';
@@ -102,6 +172,9 @@ export function MapSelection() {
               onClick={() => {
                 setSelectedRegion(r.name);
                 setSearchQuery('');
+                if (mode === 'onboarding') {
+                  updateOnboardingDraft({ region: r.name });
+                }
               }}
               className={LIST_ROW}
             >
